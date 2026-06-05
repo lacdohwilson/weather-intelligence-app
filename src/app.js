@@ -5,8 +5,10 @@ import globalErrorHandler from "./controllers/error.controller.js";
 import config from "./configurations/config.js";
 import AppError from "./utils/appError.js";
 import swaggerSpec from "./docs/swagger.js";
+import { apiLimiter } from "./middlewares/rateLimiter.js";
 import morgan from "morgan";
 import { DEV } from "./constants/environments.js";
+import { requestLogger } from "./middlewares/requestLogger.js";
 
 const app = express();
 
@@ -15,6 +17,12 @@ app.use(urlencoded({ extended: true, limit: "10kb" }));
 if (config.env === DEV) {
   app.use(morgan('dev'))
 }
+
+// RATE LIMITER
+app.use(apiLimiter);
+
+// REQUEST LOGGERS
+app.use(requestLogger);
 
 // SWAGGER DOCUMENTATION
 app.use(`${config.prefix}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));

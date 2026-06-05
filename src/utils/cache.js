@@ -19,7 +19,7 @@ const setCache = (city, data) => {
   });
 };
 
-export default {
+export {
   getCachedWeather,
   setCache,
 };

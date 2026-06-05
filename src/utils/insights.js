@@ -1,3 +1,8 @@
+/**
+ * @breif Generate weather insights
+ * @param {Object} weather 
+ * @returns {Array}
+ */
 const generateInsights = (weather) => {
   const insights = [];
 
@@ -20,4 +25,6 @@ const generateInsights = (weather) => {
   return insights;
 };
 
-export default generateInsights;
+export {
+  generateInsights
+};

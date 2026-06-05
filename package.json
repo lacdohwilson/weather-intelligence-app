@@ -1,0 +1,12 @@
+{
+  "name": "weather-intelligence-app",
+  "version": "1.0.0",
+  "description": "Weather intelligence app for displaying the weather condition of user preffered city",
+  "license": "MIT",
+  "author": "Lac-Doh-Wilson Tchofor",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

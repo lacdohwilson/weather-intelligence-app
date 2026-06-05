@@ -4,7 +4,7 @@ import { getCityWeather } from "../services/weather.service.js";
 import { generateInsights } from "../utils/insights.js";
 
 const getWeather = catchAsync(async (req, res, next) => {
-  const { city } = req.params;
+  const { city } = req.query;
 
   const data = await getCityWeather(city);
 

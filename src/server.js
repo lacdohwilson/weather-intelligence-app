@@ -1,10 +1,10 @@
 process.on("uncaughtException", (err) => {
-  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
-  console.log(err);
+  logger.error("UNHANDLED REJECTION! 💥 Shutting down...", { err });
   process.exit(1);
 });
 
 import app from "./app.js";
+import logger from "./utils/logger.js";
 
 const port = process.env.PORT || 9000;
 const server = app.listen(port, () => {
@@ -12,8 +12,7 @@ const server = app.listen(port, () => {
 });
 
 process.on("unhandledRejection", (err) => {
-  console.log("UNHANDLER REJECTION! 💥 Shutting down...");
-  console.log(err);
+  logger.error("UNHANDLED REJECTION! 💥 Shutting down...", { err });
   server.close(() => {
     process.exit(1);
   });

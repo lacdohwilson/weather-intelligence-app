@@ -1,0 +1,62 @@
+WeatherResponse:
+  type: object
+  properties:
+    status:
+      type: string
+      example: success
+    message:
+      type: string
+      example: City weather fetched successfully
+    data:
+      type: object
+      properties:
+        weather:
+          type: object
+          properties:
+            temperature:
+              type: number
+              example: 21.6
+            condition:
+              type: string
+              example: Moderate Drizzle
+            humidity:
+              type: number
+              example: 93
+            windSpeed:
+              type: number
+              example: 9.1
+            rainProbability:
+              type: number
+              example: 69
+        insights:
+          type: array
+          items:
+            type: string
+          example:
+            - High chance of rain - carry an umbrella.
+
+ErrorResponse:
+  type: object
+  properties:
+    status:
+      type: string
+      example: fail
+    error:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        status:
+          type: string
+          example: fail
+        isOperational:
+          type: boolean
+          example: true
+    message:
+      type: string
+      example: "City not found: kjdkjka"
+    stack:
+      type: string
+      description: Stack trace (only present in development)
+      example: "Error: City not found: kjdkjka\n    at geocodeCity ..."

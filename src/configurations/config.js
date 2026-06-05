@@ -17,7 +17,6 @@ const config = {
    * @breif Weather AI configuration values
    */
   weather: {
-    base_url: process.env.WEATHER_BASE_URL,
     api_key: process.env.WEATHER_API_KEY,
   },
 };

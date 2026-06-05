@@ -1,15 +1,17 @@
-/weather/{city}:
+/weather:
   get:
     tags:
       - Weather
     summary: Get weather by city name
+
     parameters:
-      - in: path
+      - in: query
         name: city
         required: true
         schema:
           type: string
         example: Douala
+
     responses:
       200:
         description: Weather fetched successfully
@@ -17,21 +19,24 @@
           application/json:
             schema:
               $ref: '#/components/schemas/WeatherResponse'
+
       400:
         description: Bad request
         content:
           application/json:
             schema:
-              $ref: '#components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/ErrorResponse'
+
       404:
         description: City not found
         content:
           application/json:
             schema:
-              $ref: '#components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/ErrorResponse'
+
       500:
         description: Internal server error
         content:
           application/json:
             schema:
-              $ref: '#components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/ErrorResponse'

@@ -6,12 +6,13 @@ import config from "./configurations/config.js";
 import AppError from "./utils/appError.js";
 import swaggerSpec from "./docs/swagger.js";
 import morgan from "morgan";
+import { DEV } from "./constants/environments.js";
 
 const app = express();
 
 app.use(urlencoded({ extended: true, limit: "10kb" }));
 
-if (config.env === 'development') {
+if (config.env === DEV) {
   app.use(morgan('dev'))
 }
 

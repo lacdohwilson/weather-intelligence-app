@@ -1,29 +1,17 @@
 import catchAsync from "../utils/catchAsync.js";
+import { getCachedWeather, setCache } from "../utils/cache.js";
+import { getCityWeather } from "../services/weather.service.js";
+import { generateInsights } from "../utils/insights.js";
 
 const getWeather = catchAsync(async (req, res, next) => {
-  const { city } = req.query;
+  const { city } = req.params;
 
-  const cached = getCachedWeather(city);
-
-  if (cached) {
-    res.status(200).json({
-      status: "success",
-      message: "City weather fetched successfully",
-      data: cached.data,
-    });
-  }
-
-  const weather = await getCityWeather(city);
-  const insights = generateInsights(weather);
-
-  const result = { weather, insights };
-
-  setCache(city, result);
+  const data = await getCityWeather(city);
 
   res.status(200).json({
     status: "success",
     message: "City weather fetched successfully",
-    data: result.data,
+    data,
   });
 });
 

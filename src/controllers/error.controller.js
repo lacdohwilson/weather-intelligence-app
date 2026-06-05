@@ -1,4 +1,5 @@
 import config from "../configurations/config.js";
+import { DEV, PROD } from "../constants/environments.js";
 
 const sendErrorDev = (err, req, res) => {
   if (req.originalUrl.startsWith("/api")) {
@@ -26,9 +27,9 @@ const sendErrorProd = (err, req, res) => {
 export default (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-  if (config.env === "development") {
+  if (config.env === DEV) {
     sendErrorDev(err, req, res);
-  } else if (config.env === "production") {
+  } else if (config.env === PROD) {
     sendErrorProd(error, req, res);
   }
 };

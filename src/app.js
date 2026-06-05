@@ -1,12 +1,22 @@
 import express, { json, urlencoded } from "express";
+import swaggerUi from 'swagger-ui-express';
 import weatherRouter from "./routes/weather.routes.js";
+import globalErrorHandler from "./controllers/error.controller.js";
 import config from "./configurations/config.js";
 import AppError from "./utils/appError.js";
-import globalErrorHandler from "./controllers/error.controller.js";
+import swaggerSpec from "./docs/swagger.js";
+import morgan from "morgan";
 
 const app = express();
 
 app.use(urlencoded({ extended: true, limit: "10kb" }));
+
+if (config.env === 'development') {
+  app.use(morgan('dev'))
+}
+
+// SWAGGER DOCUMENTATION
+app.use(`${config.prefix}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ROUTES
 app.use(`${config.prefix}/weather`, weatherRouter);

@@ -7,19 +7,22 @@ import AppError from "./utils/appError.js";
 import swaggerSpec from "./docs/swagger.js";
 import { apiLimiter } from "./middlewares/rateLimiter.js";
 import morgan from "morgan";
-import { DEV } from "./constants/environments.js";
+import { DEV, TEST } from "./constants/environments.js";
 import { requestLogger } from "./middlewares/requestLogger.js";
 
 const app = express();
 
+app.use(json());
 app.use(urlencoded({ extended: true, limit: "10kb" }));
 
 if (config.env === DEV) {
   app.use(morgan('dev'))
 }
 
-// RATE LIMITER
-app.use(apiLimiter);
+// RATE LIMITER - skip in test environment
+if (config.env !== TEST) {
+  app.use(apiLimiter);
+}
 
 // REQUEST LOGGERS
 app.use(requestLogger);

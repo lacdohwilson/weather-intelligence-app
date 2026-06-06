@@ -13,6 +13,9 @@ WeatherResponse:
         weather:
           type: object
           properties:
+            city:
+              type: string
+              example: Nairobi
             temperature:
               type: number
               example: 21.6

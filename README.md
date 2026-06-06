@@ -296,6 +296,6 @@ Docker ensures consistency across:
 ---
 
 ## 👨‍💻 Author
-Lac-doh-Wilson Tchofor
-Backend Engineer
-Specialized in scalable APIs, distributed systems, and production backend systems.
+* Lac-doh-Wilson Tchofor
+* Backend Engineer
+* Specialized in scalable APIs, distributed systems, and production backend systems.

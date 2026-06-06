@@ -1,6 +1,7 @@
 import httpClient from "./http.client.js";
 import { NOMINATIM_BASE_URL, WEATHER_AI_BASE_URL } from "../constants/urls.js";
 import config from "../configurations/config.js";
+import AppError from "../utils/appError.js";
 
 /**
  * Resolves a city name to geographic coordinates using the Nominatim geocoding API.
@@ -27,7 +28,7 @@ export const fetchCityCoord = async (city) => {
     });
 
     if (!response.data.length) {
-        throw new AppError(`City not found: ${city}`, 404);
+        throw new AppError(`City with name '${city}' not found`, 404);
     }
 
     const { lat, lon } = response.data[0];
@@ -35,13 +36,16 @@ export const fetchCityCoord = async (city) => {
 };
 
 export const fetchWeatherByCity = async (city) => {
+    try {
+        const { lat, lon } = await fetchCityCoord(city);
 
-    const { lat, lon } = await fetchCityCoord(city);
+        const response = await httpClient.get(`${WEATHER_AI_BASE_URL}/v1/weather`, {
+            params: { lat, lon, ai: false },
+            headers: { Authorization: `Bearer ${config.weather.api_key}` },
+        });
 
-    const response = await httpClient.get(`${WEATHER_AI_BASE_URL}/v1/weather`, {
-        params: { lat, lon, ai: false },
-        headers: { Authorization: `Bearer ${config.weather.api_key}` },
-    });
-
-    return response.data;
+        return response.data;
+    } catch (error) {
+        if (error instanceof AppError) throw error;
+    }
 };

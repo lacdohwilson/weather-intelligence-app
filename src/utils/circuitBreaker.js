@@ -1,6 +1,7 @@
 import CircuitBreaker from "opossum";
 import { fetchWeatherByCity } from "../clients/weather.client.js";
 import logger from "./logger.js";
+import AppError from "./appError.js";
 
 
 /**
@@ -36,7 +37,9 @@ const getConditionLabel = (code) => {
  * @param {number} raw.current.wind_speed       - Current wind speed in km/h.
  * @param {string} raw.current.condition_code   - WMO condition code.
  * @param {Object[]} raw.hourly                 - Hourly forecast array.
+ * @param {string} city                         - The city name requested by the client
  * @returns {{
+ *   city: string
  *   temperature: number,
  *   condition: string,
  *   humidity: number|null,
@@ -44,7 +47,8 @@ const getConditionLabel = (code) => {
  *   rainProbability: number
  * }} Mapped weather object ready for insight generation and API response.
  */
-const mapWeatherResponse = (raw) => ({
+const mapWeatherResponse = (raw, city) => ({
+    city,
     temperature: raw.current.temperature,
     condition: getConditionLabel(raw.current.condition_code),
     humidity: raw.hourly?.[0]?.humidity ?? null,
@@ -56,16 +60,19 @@ const mapWeatherResponse = (raw) => ({
 // function wrapped by breaker
 const weatherCall = async (city) => {
     const rawData = await fetchWeatherByCity(city);
-    return mapWeatherResponse(rawData);
+    return mapWeatherResponse(rawData, city);
 }
 
 export const weatherBreaker = new CircuitBreaker(weatherCall, {
     timeout: 1 * 60 * 1000, // 1 minute in milliseconds (60,000 ms)
     errorThresholdPercentage: 50,
     resetTimeout: 10000, // 10 seconds in milliseconds
+    isFailure: (error) => !(error instanceof AppError)
 });
 
 weatherBreaker.fallback((city, error) => {
+    if (error instanceof AppError) throw error;
+
     logger.warn(`Weather API timed out for ${city}. Serving fallback data.`);
 
     return {

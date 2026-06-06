@@ -41,12 +41,18 @@ const getCityWeather = async (city) => {
     const cached = getCachedWeather(city);
     if (cached) return cached;
 
-    const weather = await weatherBreaker.fire(city);
-    const insights = generateInsights(weather);
-    const result = { weather, insights };
+    try {
+        const weather = await weatherBreaker.fire(city);
+        const insights = generateInsights(weather);
+        const result = { weather, insights };
 
-    setCache(city, result);
-    return result;
+        setCache(city, result);
+        return result;
+    } catch (error) {
+        if (error instanceof AppError) throw error;
+
+        throw new AppError(error.message || 'Weather service unavailable', 503);
+    }
 };
 
 export { getCityWeather };

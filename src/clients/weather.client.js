@@ -27,7 +27,7 @@ export const fetchCityCoord = async (city) => {
     });
 
     if (!response.data.length) {
-        throw new AppError(`City not found: ${city}`, 400);
+        throw new AppError(`City not found: ${city}`, 404);
     }
 
     const { lat, lon } = response.data[0];

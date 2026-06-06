@@ -9,7 +9,7 @@ This project is designed with scalability, maintainability, and production-readi
 ## 🚀 Live API (Deployed)
 
 ```
-https://weather-intelligence-app-s0nl.onrender.com
+https://weather-intelligence-app-s0nl.onrender.com/api/v1/api-docs
 ```
 
 ---

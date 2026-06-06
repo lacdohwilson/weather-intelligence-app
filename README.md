@@ -1,12 +1,10 @@
 # 🌦️ WeatherAI Intelligence App
 
-A production-grade backend service that integrates with the WeatherAI API to deliver weather intelligence data. The service resolves location inputs into geographic coordinates using OpenStreetMap’s Nominatim API before querying WeatherAI, ensuring accurate and structured weather data retrieval.
-
-This project is designed with scalability, maintainability, and production-readiness in mind, following clean backend architecture principles.
+A production-grade backend service that integrates with the WeatherAI API to deliver weather intelligence data. The service resolves city names into geographic coordinates using OpenStreetMap's Nominatim API before querying WeatherAI, ensuring accurate and structured weather data retrieval.
 
 ---
 
-## 🚀 Live API (Deployed)
+## 🚀 Live API
 
 ```
 https://weather-intelligence-app-s0nl.onrender.com/api/v1/api-docs
@@ -16,47 +14,28 @@ https://weather-intelligence-app-s0nl.onrender.com/api/v1/api-docs
 
 ## 📌 Key Features
 
-### 🌍 Location Resolution Layer
-
-* Converts human-readable city names into latitude and longitude
-* Uses **OpenStreetMap Nominatim API**
-* Ensures WeatherAI receives precise geospatial queries
-
-### 🌦️ Weather Data Integration
-
-* Fetches weather data from WeatherAI API
-* Supports structured query-based weather retrieval using coordinates
-
-### 🧠 Clean Service Architecture
-
-* Separation of concerns (controllers, services, utils)
-* Modular and extensible design
-
-### 📊 API Documentation
-
-* Fully documented using **Swagger UI**
-* Located in `/docs` folder
-
-### 🪵 Logging & Observability
-
-* Integrated **Winston logger**
-* Structured logs for debugging and production monitoring
-
-### 🐳 Containerization
-
-* Fully Dockerized for consistent deployment across environments
+- **Location Resolution** — Converts city names to coordinates via OpenStreetMap Nominatim
+- **Weather Data Integration** — Fetches structured weather data from WeatherAI API
+- **AI-Generated Insights** — Returns human-readable weather advisories based on current conditions
+- **In-Memory Caching** — 10-minute TTL cache per city to reduce redundant API calls
+- **Circuit Breaker** — Opossum-based breaker with fallback for WeatherAI failures
+- **Rate Limiting** — Per-IP request throttling via express-rate-limit
+- **Swagger Documentation** — Fully documented and testable API via Swagger UI
+- **Structured Logging** — Winston logger with environment-aware log levels
+- **Containerization** — Fully Dockerized for consistent deployment
 
 ---
 
 ## 🧰 Tech Stack
 
-* Node.js (v24.15.0)
-* npm (11.4.2)
-* Express.js
-* Winston (logging)
-* Swagger (API documentation)
-* Docker
-* Axios (HTTP client)
+- **Runtime:** Node.js v24.15.0
+- **Framework:** Express.js
+- **HTTP Client:** Axios
+- **Circuit Breaker:** Opossum
+- **Logging:** Winston
+- **Documentation:** Swagger UI
+- **Testing:** Vitest + Supertest
+- **Containerization:** Docker
 
 ---
 
@@ -66,236 +45,210 @@ https://weather-intelligence-app-s0nl.onrender.com/api/v1/api-docs
 weather-intelligence-app/
 │
 ├── src/
-│   ├── controllers/
-│   ├── services/
-│   ├── routes/
-│   ├── utils/
-│   ├── configurations/
-│   ├── constants/
-│   ├── docs/
-│   ├── app.js
-│   └── server.js
+│   ├── clients/            # External API clients (WeatherAI, Nominatim)
+│   ├── controllers/        # HTTP request handlers
+│   ├── services/           # Business logic
+│   ├── routes/             # Express route definitions
+│   ├── middlewares/        # Rate limiter, request logger
+│   ├── utils/              # Cache, insights, circuit breaker, logger
+│   ├── configurations/     # App config (env vars)
+│   ├── constants/          # URLs, environment labels
+│   ├── docs/               # Swagger spec (YAML)
+│   ├── app.js              # Express app setup
+│   └── server.js           # Entry point
 │
-├── swagger/               # API documentation
-│
-├── tests/                 # Unit and integration tests
-│
+├── tests/                  # Unit and integration tests
 ├── Dockerfile
 ├── package.json
-├── README.md
+└── README.md
 ```
 
 ---
 
-## ⚙️ API Workflow
+## ⚙️ Local Setup
 
-### 1. Input: City Name
+### Prerequisites
 
-Client sends:
+- Node.js v24.15.0+
+- npm v11+
+- A WeatherAI API key
 
-```
-GET /api/weather?city=Douala
-```
+### 1. Clone the repository
 
----
-
-### 2. Geocoding Layer (Nominatim)
-
-City is converted into coordinates:
-
-```
-Douala → lat: 4.0511, lon: 9.7679
+```bash
+git clone https://github.com/lacdohwilson/weather-intelligence-app.git
+cd weather-intelligence-app
 ```
 
----
+### 2. Install dependencies
 
-### 3. WeatherAI API Request
-
-Coordinates are passed to WeatherAI API:
-
-```
-lat + lon → WeatherAI API → Weather Data Response
+```bash
+npm install
 ```
 
----
+### 3. Configure environment variables
 
-### 4. Response Returned
+Create a `.env` file in the root directory:
 
-Structured weather data is returned to the client.
-
----
-
-## 🔌 API Endpoints
-
-### 📍 GET `/api/v1/weather`
-
-Fetch weather data for a given city.
-
-#### Query Parameters:
-
-* `city` (required): Name of the city
-
-#### Example:
-
-```
-GET /api/v1/weather?city=Paris
+```env
+NODE_ENV=development
+PORT=9000
+API_PREFIX=/api/v1
+WEATHER_API_KEY=your_weather_ai_api_key
 ```
 
-#### Response:
+### 4. Start the development server
 
-```json
-{
-  "weather": {
-    "temperature": 18,
-    "condition": "Cloudy",
-    "humidity": 72,
-    "windSpeed":9.1,
-    "rainProbability": 69
-  },
-  "insights":[
-    "High chance of rain - carry an umbrella"
-  ]
-}
+```bash
+npm run dev
 ```
 
----
-
-## 📖 Swagger Documentation
-
-API documentation is available via Swagger:
-
-```
-/docs
-```
-
-All endpoints, parameters, and responses are documented and testable via the Swagger UI.
-
----
-
-## 🪵 Logging (Winston)
-
-The system uses structured logging for:
-
-* API requests
-* External API calls
-* Errors and exceptions
-* Debug-level tracing
-
-Logs are categorized by environment (`NODE_ENV`).
-
----
-
-## 🧪 Testing
-
-Run tests using:
-
-```
-npm run test
-```
-
-Includes:
-
-* Unit tests
-* Service layer tests
-* API endpoint validation
+The API will be available at `http://localhost:9000/api/v1`
 
 ---
 
 ## 🐳 Docker Setup
 
-### Build Image
+### Build the image
 
-```
+```bash
 docker build -t weather-intelligence-app .
 ```
 
-### Run Container
+### Run the container
 
-```
-docker run -p 9000:9000 weather-intelligence-app
+```bash
+docker run -p 9000:9000 --env-file .env weather-intelligence-app
 ```
 
 ---
 
-## ⚙️ Environment Variables
+## 🔌 API Endpoints
 
-Create a `.env` file:
+### GET `/api/v1/weather`
+
+Fetch current weather data and insights for a given city.
+
+#### Query Parameters
+
+| Parameter | Type   | Required | Description          |
+|-----------|--------|----------|----------------------|
+| `city`    | string | Yes      | Name of the city     |
+
+#### Example Request
 
 ```
-NODE_ENV=development
-PORT=9000
-API_PREFIX=/api
-weather_api_key=your_weather_ai_api_key
+GET /api/v1/weather?city=Douala
 ```
+
+#### Example Response
+
+```json
+{
+  "status": "success",
+  "message": "City weather fetched successfully",
+  "data": {
+    "weather": {
+      "city": "Douala",
+      "temperature": 21.6,
+      "condition": "Moderate Drizzle",
+      "humidity": 93,
+      "windSpeed": 9.1,
+      "rainProbability": 69
+    },
+    "insights": [
+      "High chance of rain - carry an umbrella."
+    ]
+  }
+}
+```
+
+#### Error Response
+
+```json
+{
+  "status": "fail",
+  "message": "City not found: xyz"
+}
+```
+
+---
+
+## 📖 API Documentation
+
+Full Swagger documentation is available at:
+
+```
+/api/v1/api-docs
+```
+
+All endpoints, parameters, and response schemas are documented and testable via the Swagger UI.
+
+---
+
+## ⚙️ API Workflow
+
+```
+Client → GET /api/v1/weather?city=Douala
+       → Guard: validate city param
+       → Cache check (10-min TTL)
+       → Nominatim geocoding → lat/lon
+       → WeatherAI API (via circuit breaker)
+       → Map response + generate insights
+       → Cache result
+       → Return to client
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+npm run test
+```
+
+Includes:
+
+- Controller-level integration tests (Supertest)
+- Service mock tests (Vitest)
+- Circuit breaker and fallback coverage
 
 ---
 
 ## 🚀 Available Scripts
 
-### Development
-
-```
-npm run dev
-```
-
-### Production
-
-```
-npm run prod
-```
-
-### Start (standard)
-
-```
-npm run start
-```
-
-### Testing
-
-```
-npm run test
-```
+| Script          | Command          | Description                  |
+|-----------------|------------------|------------------------------|
+| Development     | `npm run dev`    | Start with hot reload        |
+| Production      | `npm run start`  | Start production server      |
+| Test            | `npm run test`   | Run test suite               |
 
 ---
 
 ## 🧠 Architectural Decisions
 
-### 1. Separation of Concerns
+### 1. Geocoding Preprocessing Layer
+WeatherAI requires coordinates, not city names. OpenStreetMap Nominatim was integrated as a preprocessing step to resolve city names to lat/lon before each WeatherAI request.
 
-* Controllers handle HTTP layer
-* Services handle business logic
-* Utils handle reusable logic (geocoding, formatting)
+### 2. Circuit Breaker Pattern
+Opossum wraps all WeatherAI calls. If the external service becomes unavailable, the breaker opens and returns fallback data — preventing cascading failures and keeping the API responsive.
 
-### 2. External Geocoding Layer
+### 3. Separation of Concerns
+- Controllers handle the HTTP layer only
+- Services orchestrate business logic
+- Clients handle raw external API communication
+- Utils handle reusable cross-cutting concerns
 
-WeatherAI requires coordinates, not city names.
-To solve this, OpenStreetMap Nominatim was integrated as a preprocessing layer.
+### 4. Observability First
+Winston provides structured, environment-aware logging across all layers — requests, external calls, errors, and cache hits — ensuring production-grade traceability.
 
-### 3. Observability First
-
-Winston logging ensures production-grade debugging and traceability.
-
-### 4. Containerization
-
-Docker ensures consistency across:
-
-* local development
-* CI pipelines
-* production deployment
-
----
-
-## 📈 Future Improvements
-
-* Redis caching for weather responses
-* Rate limiting per IP
-* Circuit breaker for WeatherAI API failures
-* CI/CD pipeline integration (GitHub Actions)
-* Request validation middleware (Joi / Zod)
+### 5. Containerization
+Docker ensures the app runs identically across local development, CI pipelines, and production deployments.
 
 ---
 
 ## 👨‍💻 Author
-* Lac-doh-Wilson Tchofor
-* Backend Engineer
-* Specialized in scalable APIs, distributed systems, and production backend systems.
+
+**Lac-doh-Wilson Tchofor**
+Backend Engineer — Node.js · Java · Spring Boot
+Specialized in scalable APIs, distributed systems, and production backend architecture.

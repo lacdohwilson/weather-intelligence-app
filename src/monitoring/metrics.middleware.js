@@ -1,14 +1,26 @@
-import { httpRequestDuration } from './metrics.js';
+import {
+    activeRequests,
+    httpRequestDuration,
+    httpRequestsTotal,
+} from './metrics.js';
 
 const metricsMiddleware = (req, res, next) => {
+    activeRequests.inc();
+
     const end = httpRequestDuration.startTimer();
 
     res.on('finish', () => {
-        end({
+        activeRequests.dec();
+
+        const labels = {
             method: req.method,
             route: req.originalUrl,
-            code: res.statusCode,
-        });
+            status: String(res.statusCode),
+        };
+
+        end(labels);
+
+        httpRequestsTotal.inc(labels);
     });
 
     next();

@@ -1,18 +1,27 @@
 import client from 'prom-client';
 
-// Create registry
 export const register = new client.Registry();
 
-// Default Node.js metrics (CPU, memory, event loop)
 client.collectDefaultMetrics({ register });
 
-// Custom HTTP duration metric
 export const httpRequestDuration = new client.Histogram({
     name: 'http_request_duration_ms',
     help: 'Duration of HTTP requests in ms',
-    labelNames: ['method', 'route', 'code'],
+    labelNames: ['method', 'route', 'status'],
     buckets: [50, 100, 300, 500, 1000, 3000, 5000],
 });
 
-// Register custom metric
+export const httpRequestsTotal = new client.Counter({
+    name: 'http_requests_total',
+    help: 'Total number of HTTP requests',
+    labelNames: ['method', 'route', 'status'],
+});
+
+export const activeRequests = new client.Gauge({
+    name: 'active_requests',
+    help: 'Currently active requests',
+});
+
 register.registerMetric(httpRequestDuration);
+register.registerMetric(httpRequestsTotal);
+register.registerMetric(activeRequests);

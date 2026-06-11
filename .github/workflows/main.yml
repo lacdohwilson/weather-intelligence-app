@@ -90,6 +90,10 @@ jobs:
     needs: [build, test, security-scan, build-and-deploy]
     if: always()
     steps:
+      - name: Set Job URL
+        id: job-url
+        run: echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
+
       - name: Report Status to Slack
         uses: ravsamhq/notify-slack-action@v2
         with:
@@ -97,6 +101,6 @@ jobs:
           notify_when: 'success,failure,cancelled'
           notification_title: '{workflow} has {status_message}'
           message_format: '{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>'
-          footer: "Workflow: <{workflow_url}|{workflow}>\nJob: <{job_url}|{job}>\nCommit: <{commit_url}|{commit}>\nRun: <{run_url}|#{run_id}>"
+          footer: "Workflow: <{workflow_url}|{workflow}>\nCommit: <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>\nRun: <${{ steps.job-url.outputs.url }}|#${{ github.run_id }}>\nBranch: ${{ github.ref_name }}\nTriggered by: ${{ github.actor }}"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

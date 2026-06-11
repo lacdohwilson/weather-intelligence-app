@@ -88,15 +88,15 @@ jobs:
   slack-notification:
     runs-on: ubuntu-latest
     needs: [build, test, security-scan, build-and-deploy]
-    if: always() # Run regardless of previous job outcomes
+    if: always()
     steps:
-      - name: Report Status to Slack Notification
-        uses: ravsamhq/notify-slack-action@master
+      - name: Report Status to Slack
+        uses: ravsamhq/notify-slack-action@v2
         with:
-          status: ${{ job.status }}
-          notify_when: 'success,failure,warnings'
-          notification_title: '{workflows} has {status_message}'
+          status: ${{ contains(needs.*.result, 'failure') && 'failure' || contains(needs.*.result, 'cancelled') && 'cancelled' || 'success' }}
+          notify_when: 'success,failure,cancelled'
+          notification_title: '{workflow} has {status_message}'
           message_format: '{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>'
-          footer: 'Workflow: <{workflow_url}|{workflow}> | Job: <{job_url}|{job}> | Commit: <{commit_url}|{commit}> | Run: <{run_url}|#{run_id}>'
+          footer: "Workflow: <{workflow_url}|{workflow}>\nJob: <{job_url}|{job}>\nCommit: <{commit_url}|{commit}>\nRun: <{run_url}|#{run_id}>"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
